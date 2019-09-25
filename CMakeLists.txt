@@ -6,6 +6,7 @@ enable_testing()
 
 set(SOURCES
     src/Simulatable.cc
+    src/Station.cc
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})
