@@ -9,5 +9,3 @@ function(create_test TEST_NAME)
     gtest_main)
     gtest_discover_tests(${TEST_NAME}Test)
 endfunction()
-
-create_test(Simulatable)

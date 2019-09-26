@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 enable_testing()
 
 set(SOURCES
-    src/Simulatable.cc
+    src/Packet.cc
     src/Station.cc
 )
 

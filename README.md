@@ -39,18 +39,40 @@ A `Station` senses a `Medium` before transmission.
 A `Medium` may accept multiple packets simultaneously. It is up to a `Station`
 to detect collisions.
 
+`Station`s expect input from the simulation controller in a way resembling the
+following order:
+
+    for(int i(0); i < simulationTicks; i++) {
+        station.tick();
+        station.arrive(packet);
+        station.tock();
+    }
+
+Additionally, each tick/tock only represents a single 10µs (1-slot) increment.
+
 
  ## Questions
 
 + Do we consider propagation delay to be negligible?
 
-+ Do stations retransmit if they don't see collision-free ACK?
++ If a station becomes ready to transmit and the channel is idle for initial
+DIFS, is the backoff counter used?
 
-+ In problem 2, when B sends an ACK, do both A and C receive?
++ If channel is busy at any point during DIFS sense, does station immediately
+start backoff, or wait out the full DIFS and then backoff?
 
-+ How quickly are collisions detected, can they be detected by sender before arrival, or during arrival of a larger packet
++ Is the only way for the sender to detect collision to not receive an ACK?
+
++ How quickly are collisions detected, can they be detected by sender before
+arrival, or during arrival of a larger packet
 
 + clarify how poisson distribution generation works
+
+
+## Observations
+
+Because of DIFS sensing time, I don't think it's possible to collide with an
+ACK.
 
 
 ## Collaboration
