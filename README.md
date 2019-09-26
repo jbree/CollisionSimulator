@@ -1,5 +1,17 @@
 # CollisionSimulator
 
+## Checkout and build
+
+Build requires that you checkout git submodules:
+
+    git clone --recurse-submodules [REPO_URL]
+
+Then build using CMake
+
+    mkdir build
+    cd build
+    cmake path/to/project/source
+
 ## Explanation
 
 The basic idea is to model each of the significant pieces of the network in an
@@ -35,3 +47,20 @@ to detect collisions.
 + Do stations retransmit if they don't see collision-free ACK?
 
 + In problem 2, when B sends an ACK, do both A and C receive?
+
++ How quickly are collisions detected, can they be detected by sender before arrival, or during arrival of a larger packet
+
++ clarify how poisson distribution generation works
+
+
+## Collaboration
+
+Tim
++ Figure out poisson
++ simulation controller
++ reading in scenario data
+
+Joshua
++ station state machine
++ medium
++ dumping out simulation data
