@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <list>
 #include <set>
+#include <memory>
 
 class Medium;
 struct Packet;
