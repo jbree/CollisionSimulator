@@ -5,21 +5,14 @@
 class Simulatable {
 
 public:
-    Simulatable ();
+
+    const uint64_t MICROSECONDS_PER_TICK { 10 };
+    const uint64_t BYTES_PER_TICK { 15 };
 
     /// Begin a simulation tick
-    virtual void tick ();
+    virtual void tick () = 0;
 
     /// End a simulation tick
-    virtual void tock ();
+    virtual void tock () = 0;
 
-    /// @return The current simulation clock value (in ticks)
-    uint64_t clock () const;
-
-    /// @return True if the frame is ticking, false if frame is tocking
-    bool active () const;
-
-private:
-    uint64_t clock_;
-    bool active_;
 };
