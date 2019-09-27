@@ -1,8 +1,10 @@
+#pragma once
+
 #include <list>
 #include <cstdlib>
 
 class DataGenerator {
 
 public:
-	std::List<float> createArrivalTimes();
+	std::list<int> createArrivalTimes(int lambda);
 };
