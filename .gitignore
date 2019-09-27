@@ -94,5 +94,5 @@ Temporary Items
 build
 .vscode
 /.vs/CollisionSimulator/v15/Browse.VC.opendb
-/.vs
+/.vs/*
 /.vs/CollisionSimulator/v15/Browse.VC.db
