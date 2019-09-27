@@ -35,6 +35,8 @@ public:
     /// general direction
     void receive (const Packet& packet);
 
+    const std::string& name () const;
+
 protected:
 
     /// @return True if *any* of the media this station transmits on are busy
@@ -42,6 +44,7 @@ protected:
 
 private:
 
+    std::string name_;
     std::list<Packet> arrivedPackets_;
     std::set<std::shared_ptr<Medium>> media_;
 

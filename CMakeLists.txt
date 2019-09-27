@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 enable_testing()
 
 set(SOURCES
+    src/Medium.cc
     src/Packet.cc
     src/Station.cc
 )

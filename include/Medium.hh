@@ -17,7 +17,9 @@ public:
     /// receive the packet and determine if it is useful to them.
     void transmit (const Packet& p);
     
-    /// Sense this medium and determine if it is busy.
+    /// Sense this medium and determine if it is busy. Sensing may only be
+    /// performed between tock and tick.
+    ///
     /// @return True if busy, false otherwise
     bool isBusy ();
 
@@ -32,6 +34,7 @@ public:
     void tock () override;
 
 private:
+
 
     std::set<std::weak_ptr<Station>> receivers_;
 

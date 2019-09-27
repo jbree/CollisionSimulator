@@ -133,3 +133,9 @@ bool Station::mediaBusy ()
 
     return false;
 }
+
+const std::string& Station::name () const
+{
+    return name_;
+}
+
