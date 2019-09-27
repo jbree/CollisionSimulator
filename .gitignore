@@ -94,3 +94,7 @@ Temporary Items
 build
 .vscode
 /.vs/CollisionSimulator/v15/Browse.VC.opendb
+/.vs/CollisionSimulator/v15/Browse.VC.db
+/.vs/CollisionSimulator/v15/.suo
+/.vs/CollisionSimulator/v15/Browse.VC.db
+/.vs/slnx.sqlite
