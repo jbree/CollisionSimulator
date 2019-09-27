@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Simulatable.hh"
-#include <set>
+#include <vector>
 
 class Packet;
 class Station;
@@ -36,6 +36,6 @@ public:
 private:
 
 
-    std::set<std::weak_ptr<Station>> receivers_;
+    std::vector<std::weak_ptr<Station>> receivers_;
 
 };

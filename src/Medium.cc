@@ -4,12 +4,12 @@
 
 void Medium::transmit (const Packet& p)
 {
-    for (auto weakReceiver: receivers_) {
-        auto receiver = weakReceiver.lock();
-        if (receiver && p.src != receiver->name()) {
-            receiver->receive(p);
-        } 
-    }
+    // for (auto weakReceiver: receivers_) {
+    //     auto receiver = weakReceiver.lock();
+    //     if (receiver && p.src != receiver->name()) {
+    //         receiver->receive(p);
+    //     } 
+    // }
 }
 
 /// Sense this medium and determine if it is busy.
@@ -24,7 +24,7 @@ bool Medium::isBusy ()
 /// dependency.
 void Medium::addStation (std::weak_ptr<Station> receiver)
 {
-    receivers_.insert(receiver);
+    receivers_.emplace_back(std::move(receiver));
 }
 
 /// Invoke at the beginning of a simulation frame
