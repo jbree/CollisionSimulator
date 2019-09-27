@@ -5,9 +5,10 @@ set(CMAKE_CXX_STANDARD 11)
 enable_testing()
 
 set(SOURCES
-    src/Medium.cc
+	src/Controller.cc
     src/Packet.cc
     src/Station.cc
+	src/DataGenerator.cc
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})

@@ -8,7 +8,6 @@ class Station;
 
 class Medium: public Simulatable {
 public:
-
     Medium (
             const std::string& name
             );
