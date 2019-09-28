@@ -18,8 +18,10 @@ public:
 private:
 	DataGenerator generator;
 	std::list<Station> stationList;
-	//std::map<std::string, Station> initStationMap;
 
+	std::map<std::string, std::shared_ptr<Medium>> mediumMap;
+	//std::list<std::shared_ptr<Medium>> mediumList;
+	//std::map<std::string, Station> initStationMap;
 
 	std::map<std::string, std::pair<std::list<int>, std::string>> packetArrivalMap;
 	//std::map <std::string, std::pair<Station, std::list<int>>> txStationMap;
