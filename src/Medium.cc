@@ -24,6 +24,7 @@ void Medium::transmit (const Packet& p)
         throw std::runtime_error("Medium must tick() before transmitting");
     }
 
+    isTransmitting_ = true;
     packets_.push_back(p);
 }
 
@@ -59,7 +60,6 @@ void Medium::tock ()
     isTicking_ = false;
 
     if (packets_.empty()) {
-        isTransmitting_ = false;
         return;
     }
 
@@ -71,5 +71,4 @@ void Medium::tock ()
             }
         }
     }
-    isTransmitting_ = true;
 }

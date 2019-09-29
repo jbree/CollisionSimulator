@@ -22,7 +22,7 @@ public:
 
     /// A packet arrives for transmission. This method should be called between
     /// `tick()` and `tock()`
-    void arrive (const Packet& packet);
+    virtual void arrive (const Packet& packet);
 
     /// Invoke this method to indicate the beginning of a time slot
     void tick () override;
@@ -32,7 +32,7 @@ public:
 
     /// This function is invoked by a Medium when a packet is thrown in its
     /// general direction
-    void receive (const Packet& packet);
+    virtual void receive (const Packet& packet);
 
     const std::string& name () const;
 

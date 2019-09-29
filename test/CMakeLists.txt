@@ -11,3 +11,4 @@ function(create_test TEST_NAME)
 endfunction()
 
 create_test(Station collision_sim)
+create_test(Medium collision_sim)
