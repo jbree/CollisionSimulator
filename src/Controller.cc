@@ -74,9 +74,9 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 			mediumSet.insert(mediumMap.at(*itMediums));
 		}
 
-		Station station(itStation->first, mediumSet, virtualCarrierSensingEnabled);
 		//initStationMap[itStation->first] = station;
-		stationList.push_back(station);
+		// emplace instead of insert because Station doesn't have valid copy constructor
+		stationList.emplace_back(itStation->first, mediumSet, virtualCarrierSensingEnabled);
 
 		/*std::pair<Station, std::list<int>> stationPacketPair(station, packetArrivalMap[itStation->first]);
 

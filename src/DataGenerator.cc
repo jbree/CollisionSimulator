@@ -1,6 +1,6 @@
 #include "DataGenerator.hh"
 
-#include <chrono>//number of 10 micro-s ticks for 10 seconds of simulation
+#include <cmath>
 
 std::list<int> DataGenerator::createArrivalTimes(int lambda)
 {
