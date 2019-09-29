@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Simulatable.hh"
+#include <list>
 #include <vector>
 
 class Packet;
@@ -13,29 +14,35 @@ public:
             const std::string& name
             );
 
+    virtual ~Medium ();
+
     /// Transmit a packet across this medium. All registered receivers will
     /// receive the packet and determine if it is useful to them.
-    void transmit (const Packet& p);
+    ///
+    /// `tick()` must be called before transmit to ensure that the frame is in
+    /// the correct state.
+    virtual void transmit (const Packet& p);
     
     /// Sense this medium and determine if it is busy. Sensing may only be
     /// performed between tock and tick.
     ///
     /// @return True if busy, false otherwise
-    bool isBusy ();
+    virtual bool isBusy () const;
 
     /// Add a station to this medium. Keep weak pointers to prevent cyclic
     /// dependency.
-    void addStation (std::weak_ptr<Station> receiver);
+    virtual void addStation (std::weak_ptr<Station> receiver);
 
     /// Invoke at the beginning of a simulation frame
-    void tick () override;
+    virtual void tick () override;
 
     /// Invoke at the end of a simulation frame
-    void tock () override;
+    virtual void tock () override;
 
 private:
-
-
+    bool isTicking_;
+    bool isTransmitting_;
     std::vector<std::weak_ptr<Station>> receivers_;
+    std::list<Packet> packets_;
 
 };

@@ -21,5 +21,7 @@ struct Packet {
 
     size_t size;
 
+    bool operator== (const Packet& rhs) const;
+
     static const std::map<PacketType, size_t> PACKET_SIZE;
 };

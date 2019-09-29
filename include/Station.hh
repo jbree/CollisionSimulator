@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Packet.hh"
 #include "Simulatable.hh"
-#include <chrono>
 #include <cstdint>
 #include <list>
 #include <set>
@@ -9,7 +9,6 @@
 
 
 class Medium;
-struct Packet;
 
 class Station: public Simulatable {
 
@@ -40,16 +39,33 @@ public:
 protected:
 
     /// @return True if *any* of the media this station transmits on are busy
-    bool mediaBusy ();
+    bool mediaBusy () const;
+
+    /// Transmit a fragment on all of the available media.
+    /// @return True if this is the last fragment (packet complete)
+    bool transmitFragment (const Packet& packet);
+
+    /// @return True if the packet was sent to this Station
+    bool rxPacketBelongsToUs (const Packet& packet) const;
+
+    void expandContentionWindow ();
 
 private:
 
     std::string name_;
     std::list<Packet> arrivedPackets_;
+    std::unique_ptr<Packet> transmittingPacket_;
+    size_t transmittedBytes_;
+
+    std::list<Packet> receivedPacket_;
+    std::unique_ptr<Packet> receivingPacket_;
+    size_t receivedBytes_;
     std::set<std::shared_ptr<Medium>> media_;
 
     enum class State {
         Idle,
+        Receiving,
+        Acking,
         Ready,
         Sense,
         Backoff,
@@ -61,6 +77,9 @@ private:
 
     uint16_t remainingSenseTicks_;
     bool busyDuringSense_;
+    int16_t waitForAckTicks_;
+
+    uint16_t ackTick_;
 
     uint16_t backoff_;
     uint16_t contentionWindow_; /// Contention window slot count

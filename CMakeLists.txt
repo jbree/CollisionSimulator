@@ -6,9 +6,10 @@ enable_testing()
 
 set(SOURCES
 	src/Controller.cc
+	src/DataGenerator.cc
+    src/Medium.cc
     src/Packet.cc
     src/Station.cc
-	src/DataGenerator.cc
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})
