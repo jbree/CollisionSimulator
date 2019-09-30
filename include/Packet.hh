@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <iosfwd>
 #include <map>
 #include <string>
 
@@ -22,6 +23,8 @@ struct Packet {
     size_t size;
 
     bool operator== (const Packet& rhs) const;
+
+    friend std::ostream& operator<< (std::ostream& out, const Packet& rhs);
 
     static const std::map<PacketType, size_t> PACKET_SIZE;
 };

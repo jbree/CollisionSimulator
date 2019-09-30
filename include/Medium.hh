@@ -34,10 +34,10 @@ public:
     virtual void addStation (std::weak_ptr<Station> receiver);
 
     /// Invoke at the beginning of a simulation frame
-    virtual void tick () override;
+    void tick () override;
 
     /// Invoke at the end of a simulation frame
-    virtual void tock () override;
+    void tock () override;
 
 private:
     bool isTicking_;

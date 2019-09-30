@@ -9,6 +9,8 @@ set(SOURCES
 	src/DataGenerator.cc
     src/Medium.cc
     src/Packet.cc
+    src/ReceiverStation.cc
+    src/SenderStation.cc
     src/Station.cc
 )
 

@@ -10,5 +10,6 @@ function(create_test TEST_NAME)
     gtest_discover_tests(${TEST_NAME}Test)
 endfunction()
 
-create_test(Station collision_sim)
+create_test(ReceiverStation collision_sim)
+create_test(SenderStation collision_sim)
 create_test(Medium collision_sim)

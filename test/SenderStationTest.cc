@@ -1,19 +1,19 @@
 #include <gtest/gtest.h>
-#include "Station.hh"
+#include "SenderStation.hh"
 #include "MockMedium.hh"
 
 using namespace ::testing;
 
-TEST(StationTest, NamedByConstructor)
+TEST(SenderStationTest, NamedByConstructor)
 {
-    Station s("TestStation", {}, false);
+    SenderStation s("TestStation", {}, false);
     ASSERT_EQ("TestStation", s.name());
 }
 
-TEST(StationTest, NoCallsUponArrival)
+TEST(SenderStationTest, NoCallsUponArrival)
 {
     auto medium = std::shared_ptr<StrictMock<MockMedium>>(new StrictMock<MockMedium>("MockMedium"));
-    Station s("TestStation", {medium}, false);
+    SenderStation s("TestStation", {medium}, false);
 
     Packet p;
     p.dst = "TestStation";
@@ -36,10 +36,10 @@ TEST(StationTest, NoCallsUponArrival)
 }
 
 
-TEST(StationTest, SenseBeforeTransmit)
+TEST(SenderStationTest, SenseBeforeTransmit)
 {
     auto medium = std::shared_ptr<StrictMock<MockMedium>>(new StrictMock<MockMedium>("MockMedium"));
-    Station s("TestStation", {medium}, false);
+    SenderStation s("TestStation", {medium}, false);
 
     Packet p;
     p.dst = "TestStation";
@@ -58,41 +58,4 @@ TEST(StationTest, SenseBeforeTransmit)
         s.tock();
     }
 
-}
-
-
-TEST(StationTest, AckAfterCollisionFree)
-{
-    auto medium = std::shared_ptr<StrictMock<MockMedium>>(new StrictMock<MockMedium>("MockMedium"));
-    Station s("TestStation", {medium}, false);
-
-    Packet p;
-    p.dst = "TestStation";
-    p.src = "Unknown";
-    p.size = 1500;
-    p.type = PacketType::Data;
-
-    Packet ack;
-    p.dst = "Unknown";
-    p.src = "TestStation";
-    p.size = 30;
-    p.type = PacketType::Ack;
-
-    for (size_t i(0); i < 100; i++) {
-        s.tick();
-        s.receive(p);
-        s.tock();
-    }
-
-    // SIFS before ACK
-    s.tick();
-    s.tock();
-
-    EXPECT_CALL(*medium, transmit(_))
-            .Times(2);
-
-    for (size_t i(0); i < 3; i++) {
-        s.tick();
-        s.tock();
-    }
 }

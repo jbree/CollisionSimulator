@@ -9,6 +9,4 @@ public:
     MOCK_METHOD(void, transmit, (const Packet& p), (override));
     MOCK_METHOD(bool, isBusy, (), (const, override));
     MOCK_METHOD(void, addStation, (std::weak_ptr<Station> receiver), (override));
-    MOCK_METHOD(void, tick, (), (override));
-    MOCK_METHOD(void, tock, (), (override));
 };
