@@ -55,7 +55,6 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 			{
 				std::shared_ptr<Medium> mediumPtr(new Medium(mediumName));
 				mediumMap[mediumName] = mediumPtr;
-				//mediumList.push_back(mediumPtr);
 			}
 
 			if (transmitMarker == "T")
@@ -76,14 +75,14 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 
 		//initStationMap[itStation->first] = station;
 		// emplace instead of insert because Station doesn't have valid copy constructor
-		stationList.emplace_back(itStation->first, mediumSet, virtualCarrierSensingEnabled);
-
-		/*std::pair<Station, std::list<int>> stationPacketPair(station, packetArrivalMap[itStation->first]);
-
 		if (packetArrivalMap.count(itStation->first) != 0)
 		{
-			txStationMap[itStation->first] = stationPacketPair;
-		}*/
+			senderList.emplace_back(itStation->first, mediumSet, virtualCarrierSensingEnabled);
+		}
+		else
+		{
+			receiverList.emplace_back(itStation->first, mediumSet);
+		}
 
 		itStation++;
 	}
@@ -95,9 +94,12 @@ void Controller::RunSimulation()
 	Packet packetToSend;
 
 	std::map<std::string, std::pair<std::list<int>, std::string>>::iterator itPacketArrivals = packetArrivalMap.begin();
-	std::list<Station>::iterator itStationList;
+	std::list<SenderStation>::iterator itSenderList;
+	std::list<ReceiverStation>::iterator itReceiverList;
 
 	std::map<std::string, std::shared_ptr<Medium>>::iterator itMediums;
+
+	//should do for each lambda combination
 
 	while (tickCounter < MAX_SIMULATION_TICKS)
 	{
@@ -109,11 +111,18 @@ void Controller::RunSimulation()
 			itMediums++;
 		}
 
-		itStationList = stationList.begin();
-		while (itStationList != stationList.end())
+		itSenderList = senderList.begin();
+		while (itSenderList != senderList.end())
 		{
-			itStationList->tick();
-			itStationList++;
+			itSenderList->tick();
+			itSenderList++;
+		}
+
+		itReceiverList = receiverList.begin();
+		while (itReceiverList != receiverList.end())
+		{
+			itReceiverList->tick();
+			itReceiverList++;
 		}
 
 		while (itPacketArrivals != packetArrivalMap.end())
@@ -132,15 +141,15 @@ void Controller::RunSimulation()
 				packetToSend.size = packetToSend.PACKET_SIZE.at(packetToSend.type);
 
 				//have data packet arrive at transmit station
-				itStationList = stationList.begin();
-				while (itStationList != stationList.end())
+				itSenderList = senderList.begin();
+				while (itSenderList != senderList.end())
 				{
-					if (itStationList->name() == itPacketArrivals->first)
+					if (itSenderList->name() == itPacketArrivals->first)
 					{
-						itStationList->arrive(packetToSend);
+						itSenderList->arrive(packetToSend);
 					}
 
-					itStationList++;
+					itSenderList++;
 				}
 
 				//remove front of list
@@ -158,14 +167,158 @@ void Controller::RunSimulation()
 			itMediums++;
 		}
 
-		itStationList = stationList.begin();
-		while (itStationList != stationList.end())
+		itSenderList = senderList.begin();
+		while (itSenderList != senderList.end())
 		{
-			itStationList->tock();
-			itStationList++;
+			itSenderList->tock();
+			itSenderList++;
+		}
+
+		itReceiverList = receiverList.begin();
+		while (itReceiverList != receiverList.end())
+		{
+			itReceiverList->tock();
+			itReceiverList++;
 		}
 
 		itPacketArrivals = packetArrivalMap.begin();
 		tickCounter++;
+	}
+
+	//call retrieve results to report findings, list lambda, throughput, collisions for all nodes
+
+}
+
+void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
+{
+	int tickCounter = 0; //counter for number of 10 micro-s ticks
+	Packet packetToSend;
+
+	std::map<std::string, std::pair<std::list<int>, std::string>>::iterator itPacketArrivals = packetArrivalMap.begin();
+	std::list<SenderStation>::iterator itSenderList;
+	std::list<ReceiverStation>::iterator itReceiverList;
+
+	std::map<std::string, std::shared_ptr<Medium>>::iterator itMediums;
+	std::list<std::pair<int, int>>::iterator itLambdas = lambdaPairList.begin();
+
+	//should do for each lambda combination
+
+	while (itLambdas != lambdaPairList.end())
+	{
+		Controller((bool)virtualCarrierSensingEnabled);
+		//change up stations A, C's packetArrivalMap with lambdaPairList
+		packetArrivalMap["A"] = std::make_pair(generator.createArrivalTimes(itLambdas->first), packetArrivalMap["A"].second);
+		packetArrivalMap["C"] = std::make_pair(generator.createArrivalTimes(itLambdas->first), packetArrivalMap["C"].second);
+
+		while (tickCounter < MAX_SIMULATION_TICKS)
+		{
+			//ticks, mediums first, then stations
+			itMediums = mediumMap.begin();
+			while (itMediums != mediumMap.end())
+			{
+				itMediums->second->tick();
+				itMediums++;
+			}
+
+			itSenderList = senderList.begin();
+			while (itSenderList != senderList.end())
+			{
+				itSenderList->tick();
+				itSenderList++;
+			}
+
+			itReceiverList = receiverList.begin();
+			while (itReceiverList != receiverList.end())
+			{
+				itReceiverList->tick();
+				itReceiverList++;
+			}
+
+			while (itPacketArrivals != packetArrivalMap.end())
+			{
+				if (itPacketArrivals->second.first.front() == tickCounter)
+				{
+					//packet arrives at station
+
+					//do algorithm, if free, send to corresponding medium
+					//use packetArrivalMap[itPacketArrivals->first].second to get destination for the packet
+
+					packetToSend.src = itPacketArrivals->first;
+					packetToSend.dst = itPacketArrivals->second.second;
+					packetToSend.type = PacketType::Data;
+					//packetToSend.PACKET_SIZE = ;
+					packetToSend.size = packetToSend.PACKET_SIZE.at(packetToSend.type);
+
+					//have data packet arrive at transmit station
+					itSenderList = senderList.begin();
+					while (itSenderList != senderList.end())
+					{
+						if (itSenderList->name() == itPacketArrivals->first)
+						{
+							itSenderList->arrive(packetToSend);
+						}
+
+						itSenderList++;
+					}
+
+					//remove front of list
+					itPacketArrivals->second.first.pop_front();
+				}
+
+				itPacketArrivals++;
+			}
+
+			//tocks, mediums first, then stations
+			itMediums = mediumMap.begin();
+			while (itMediums != mediumMap.end())
+			{
+				itMediums->second->tock();
+				itMediums++;
+			}
+
+			itSenderList = senderList.begin();
+			while (itSenderList != senderList.end())
+			{
+				itSenderList->tock();
+				itSenderList++;
+			}
+
+			itReceiverList = receiverList.begin();
+			while (itReceiverList != receiverList.end())
+			{
+				itReceiverList->tock();
+				itReceiverList++;
+			}
+
+			itPacketArrivals = packetArrivalMap.begin();
+			tickCounter++;
+		}
+
+		itLambdas++;
+	}
+
+	//call retrieve results to report findings, list lambda, throughput, collisions for all nodes
+
+}
+
+void Controller::RetrieveResults()
+{
+	std::list<SenderStation>::iterator itSenderList;
+	std::list<ReceiverStation>::iterator itReceiverList;
+
+	while (itSenderList != senderList.end())
+	{
+		//record byte arrival data (for throughput) and collision data
+		//itSenderList->arrivedPackets (iterate through to count bytes) or itSenderList->receivedBytes, then count for Kb for throughput unit Kbps
+
+		itSenderList++;
+	}
+
+	itReceiverList = receiverList.begin();
+	while (itReceiverList != receiverList.end())
+	{
+		//record byte arrival data (for throughput) and collision data
+
+		itReceiverList++;
 	}
 }

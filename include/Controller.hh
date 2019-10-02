@@ -2,6 +2,8 @@
 
 #include "DataGenerator.hh"
 #include "Station.hh"
+#include "SenderStation.hh"
+#include "ReceiverStation.hh"
 #include "Medium.hh"
 #include "Packet.hh"
 
@@ -15,14 +17,15 @@ public:
 
 	void RunSimulation();
 
+	void RunSimulationAllLambdas(bool virtualCarrierSensingEnabled);
+
+	void RetrieveResults();
 private:
 	DataGenerator generator;
-	std::list<Station> stationList;
+
+	std::list<SenderStation> senderList;
+	std::list<ReceiverStation> receiverList;
 
 	std::map<std::string, std::shared_ptr<Medium>> mediumMap;
-	//std::list<std::shared_ptr<Medium>> mediumList;
-	//std::map<std::string, Station> initStationMap;
-
 	std::map<std::string, std::pair<std::list<int>, std::string>> packetArrivalMap;
-	//std::map <std::string, std::pair<Station, std::list<int>>> txStationMap;
 };
