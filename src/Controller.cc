@@ -3,6 +3,7 @@
 #include "Medium.hh"
 #include "Packet.hh"
 
+#include <sstream>
 #include <fstream>
 #include <string>
 #include <map>
@@ -24,6 +25,7 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 	std::map<std::string, std::list<std::string>>::iterator itStation = stationMap.begin();
 
 	std::list<std::string>::iterator itMediums;
+	std::set<std::shared_ptr<Medium>>::iterator itMediumPtrs;
 	std::set<std::shared_ptr<Medium>> mediumSet;
 
 	/*
@@ -35,9 +37,11 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 	*/
 	if (inFile.is_open())
 	{
-		while (!inFile.eof())
+		std::string line;
+		while (std::getline(inFile, line))
 		{
-			inFile >> stationName >> mediumName >> transmitMarker >> targetStation >> lambdaValue;
+			std::istringstream stream(line);
+			stream >> stationName >> mediumName >> transmitMarker >> targetStation >> lambdaValue;
 
 			if (stationMap.count(stationName) == 0)
 			{
@@ -71,17 +75,34 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 		while (itMediums != itStation->second.end())
 		{
 			mediumSet.insert(mediumMap.at(*itMediums));
+
+			itMediums++;
 		}
 
-		//initStationMap[itStation->first] = station;
 		// emplace instead of insert because Station doesn't have valid copy constructor
+
+		itMediumPtrs = mediumSet.begin();
 		if (packetArrivalMap.count(itStation->first) != 0)
 		{
 			senderList.emplace_back(itStation->first, mediumSet, virtualCarrierSensingEnabled);
+
+			while (itMediumPtrs != mediumSet.end())
+			{
+				(*itMediumPtrs)->addStation(senderList.back);
+
+				itMediumPtrs++;
+			}
 		}
 		else
 		{
 			receiverList.emplace_back(itStation->first, mediumSet);
+
+			while (itMediumPtrs != mediumSet.end())
+			{
+				(*itMediumPtrs)->addStation(receiverList.back);
+
+				itMediumPtrs++;
+			}
 		}
 
 		itStation++;
