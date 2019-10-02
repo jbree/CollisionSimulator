@@ -84,22 +84,28 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 		itMediumPtrs = mediumSet.begin();
 		if (packetArrivalMap.count(itStation->first) != 0)
 		{
-			senderList.emplace_back(itStation->first, mediumSet, virtualCarrierSensingEnabled);
+			std::shared_ptr<Station> stationPtrShared(new SenderStation(itStation->first, mediumSet, virtualCarrierSensingEnabled));
+
+			senderList.emplace_back(stationPtrShared);
 
 			while (itMediumPtrs != mediumSet.end())
 			{
-				(*itMediumPtrs)->addStation(senderList.back);
+				std::weak_ptr<Station> stationPtr = stationPtrShared;
+				(*itMediumPtrs)->addStation(stationPtr);
 
 				itMediumPtrs++;
 			}
 		}
 		else
 		{
-			receiverList.emplace_back(itStation->first, mediumSet);
+			std::shared_ptr<Station> stationPtrShared(new ReceiverStation(itStation->first, mediumSet));
+
+			receiverList.emplace_back(stationPtrShared);
 
 			while (itMediumPtrs != mediumSet.end())
 			{
-				(*itMediumPtrs)->addStation(receiverList.back);
+				std::weak_ptr<Station> stationPtr = stationPtrShared;
+				(*itMediumPtrs)->addStation(stationPtr);
 
 				itMediumPtrs++;
 			}

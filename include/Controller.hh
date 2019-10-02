@@ -26,6 +26,10 @@ private:
 	std::list<SenderStation> senderList;
 	std::list<ReceiverStation> receiverList;
 
+/*
+	std::list<std::shared_ptr<SenderStation>> senderList;
+	std::list<std::shared_ptr<ReceiverStation>> receiverList;*/
+
 	std::map<std::string, std::shared_ptr<Medium>> mediumMap;
 	std::map<std::string, std::pair<std::list<int>, std::string>> packetArrivalMap;
 };
