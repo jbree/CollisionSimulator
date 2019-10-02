@@ -5,7 +5,7 @@
 
 static const int MAX_SIMULATION_TICKS{ 1000000 };
 
-std::list<std::pair<int, int>> lambdaPairList = {
+const std::list<std::pair<int, int>> lambdaPairList = {
 	std::make_pair(50, 50),
 	std::make_pair(100, 100),
 	std::make_pair(200, 200),
