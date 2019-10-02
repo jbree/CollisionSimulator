@@ -226,7 +226,7 @@ void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
 	std::list<ReceiverStation>::iterator itReceiverList;
 
 	std::map<std::string, std::shared_ptr<Medium>>::iterator itMediums;
-	std::list<std::pair<int, int>>::iterator itLambdas = lambdaPairList.begin();
+	std::list<std::pair<int, int>>::const_iterator itLambdas = lambdaPairList.begin();
 
 	//should do for each lambda combination
 
