@@ -23,8 +23,8 @@ public:
 private:
 	DataGenerator generator;
 
-	std::list<SenderStation> senderList;
-	std::list<ReceiverStation> receiverList;
+	std::list< std::shared_ptr<SenderStation>> senderList;
+	std::list< std::shared_ptr<ReceiverStation>> receiverList;
 
 /*
 	std::list<std::shared_ptr<SenderStation>> senderList;

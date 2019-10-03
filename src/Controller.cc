@@ -84,7 +84,7 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 		itMediumPtrs = mediumSet.begin();
 		if (packetArrivalMap.count(itStation->first) != 0)
 		{
-			std::shared_ptr<Station> stationPtrShared(new SenderStation(itStation->first, mediumSet, virtualCarrierSensingEnabled));
+			std::shared_ptr<SenderStation> stationPtrShared(new SenderStation(itStation->first, mediumSet, virtualCarrierSensingEnabled));
 
 			senderList.emplace_back(stationPtrShared);
 
@@ -98,7 +98,7 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 		}
 		else
 		{
-			std::shared_ptr<Station> stationPtrShared(new ReceiverStation(itStation->first, mediumSet));
+			std::shared_ptr<ReceiverStation> stationPtrShared(new ReceiverStation(itStation->first, mediumSet));
 
 			receiverList.emplace_back(stationPtrShared);
 
@@ -121,8 +121,8 @@ void Controller::RunSimulation()
 	Packet packetToSend;
 
 	std::map<std::string, std::pair<std::list<int>, std::string>>::iterator itPacketArrivals = packetArrivalMap.begin();
-	std::list<SenderStation>::iterator itSenderList;
-	std::list<ReceiverStation>::iterator itReceiverList;
+	std::list<std::shared_ptr<SenderStation>>::iterator itSenderList;
+	std::list<std::shared_ptr<ReceiverStation>>::iterator itReceiverList;
 
 	std::map<std::string, std::shared_ptr<Medium>>::iterator itMediums;
 
@@ -141,14 +141,14 @@ void Controller::RunSimulation()
 		itSenderList = senderList.begin();
 		while (itSenderList != senderList.end())
 		{
-			itSenderList->tick();
+			(*itSenderList)->tick();
 			itSenderList++;
 		}
 
 		itReceiverList = receiverList.begin();
 		while (itReceiverList != receiverList.end())
 		{
-			itReceiverList->tick();
+			(*itReceiverList)->tick();
 			itReceiverList++;
 		}
 
@@ -171,9 +171,9 @@ void Controller::RunSimulation()
 				itSenderList = senderList.begin();
 				while (itSenderList != senderList.end())
 				{
-					if (itSenderList->name() == itPacketArrivals->first)
+					if ((*itSenderList)->name() == itPacketArrivals->first)
 					{
-						itSenderList->arrive(packetToSend);
+						(*itSenderList)->arrive(packetToSend);
 					}
 
 					itSenderList++;
@@ -197,14 +197,14 @@ void Controller::RunSimulation()
 		itSenderList = senderList.begin();
 		while (itSenderList != senderList.end())
 		{
-			itSenderList->tock();
+			(*itSenderList)->tock();
 			itSenderList++;
 		}
 
 		itReceiverList = receiverList.begin();
 		while (itReceiverList != receiverList.end())
 		{
-			itReceiverList->tock();
+			(*itReceiverList)->tock();
 			itReceiverList++;
 		}
 
@@ -230,13 +230,13 @@ void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
 
 	//should do for each lambda combination
 
-	while (itLambdas != lambdaPairList.end())
+	/*while (itLambdas != lambdaPairList.end())
 	{
 		Controller((bool)virtualCarrierSensingEnabled);
 		//change up stations A, C's packetArrivalMap with lambdaPairList
 		packetArrivalMap["A"] = std::make_pair(generator.createArrivalTimes(itLambdas->first), packetArrivalMap["A"].second);
 		packetArrivalMap["C"] = std::make_pair(generator.createArrivalTimes(itLambdas->first), packetArrivalMap["C"].second);
-
+		
 		while (tickCounter < MAX_SIMULATION_TICKS)
 		{
 			//ticks, mediums first, then stations
@@ -322,7 +322,7 @@ void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
 		}
 
 		itLambdas++;
-	}
+	}*/
 
 	//call retrieve results to report findings, list lambda, throughput, collisions for all nodes
 
@@ -333,7 +333,7 @@ void Controller::RetrieveResults()
 	std::list<SenderStation>::iterator itSenderList;
 	std::list<ReceiverStation>::iterator itReceiverList;
 
-	while (itSenderList != senderList.end())
+	/*while (itSenderList != senderList.end())
 	{
 		//record byte arrival data (for throughput) and collision data
 		//itSenderList->arrivedPackets (iterate through to count bytes) or itSenderList->receivedBytes, then count for Kb for throughput unit Kbps
@@ -347,5 +347,5 @@ void Controller::RetrieveResults()
 		//record byte arrival data (for throughput) and collision data
 
 		itReceiverList++;
-	}
+	}*/
 }
