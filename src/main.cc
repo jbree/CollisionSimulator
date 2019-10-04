@@ -6,6 +6,7 @@ int main (int argc, char* argv[])
     srandom(time(nullptr));
 
     c.RunSimulation();
+    c.RetrieveResults();
 
     return 0;
 }

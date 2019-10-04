@@ -4,6 +4,7 @@
 #include "Packet.hh"
 
 #include <sstream>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <map>
@@ -120,6 +121,14 @@ void Controller::RunSimulation()
 	int tickCounter = 0; //counter for number of 10 micro-s ticks
 	Packet packetToSend;
 
+	for (auto station: senderList) {
+		std::cout << "sender: " << station->name() << std::endl;
+	}
+
+	for (auto station: receiverList) {
+		std::cout << "receiver: " << station->name() << std::endl;
+	}
+
 	std::map<std::string, std::pair<std::list<int>, std::string>>::iterator itPacketArrivals = packetArrivalMap.begin();
 	std::list<std::shared_ptr<SenderStation>>::iterator itSenderList;
 	std::list<std::shared_ptr<ReceiverStation>>::iterator itReceiverList;
@@ -127,9 +136,10 @@ void Controller::RunSimulation()
 	std::map<std::string, std::shared_ptr<Medium>>::iterator itMediums;
 
 	//should do for each lambda combination
-	const uint32_t MAX_SIMULATION_TICKS(120);
+	// const uint32_t MAX_SIMULATION_TICKS(5000);
 	while (tickCounter < MAX_SIMULATION_TICKS)
 	{
+		// std::cout << "tick " << tickCounter << std::endl;
 		//ticks, mediums first, then stations
 		itMediums = mediumMap.begin();
 		while (itMediums != mediumMap.end())
@@ -212,8 +222,13 @@ void Controller::RunSimulation()
 		tickCounter++;
 	}
 
-	//call retrieve results to report findings, list lambda, throughput, collisions for all nodes
+	for (auto packetList: packetArrivalMap) {
+		std::cout << packetList.first << " has "
+				<< packetList.second.first.size() << " remaining "
+				<< std::endl;
+	}
 
+	//call retrieve results to report findings, list lambda, throughput, collisions for all nodes
 }
 
 void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
@@ -332,6 +347,12 @@ void Controller::RetrieveResults()
 {
 	std::list<SenderStation>::iterator itSenderList;
 	std::list<ReceiverStation>::iterator itReceiverList;
+
+	for (auto receiver: receiverList) {
+		std::cout << receiver->name() <<" saw "
+				<< receiver->collisions() << " collisions and "
+				<< receiver->receivedPackets() << " successes" << std::endl; 
+	}
 
 	/*while (itSenderList != senderList.end())
 	{

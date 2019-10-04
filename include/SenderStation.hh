@@ -63,13 +63,14 @@ private:
     State state_;
 
     uint16_t remainingSenseTicks_;
-    bool busyDuringSense_;
     int16_t waitForAckTicks_;
 
     uint16_t ackTick_;
 
     uint16_t backoff_;
     uint16_t contentionWindow_; /// Contention window slot count
+
+    uint32_t ticks_;
 
     bool virtualCarrierSensingEnabled_; /// Virtual carrier sensing
 

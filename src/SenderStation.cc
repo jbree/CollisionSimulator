@@ -18,13 +18,15 @@ SenderStation::SenderStation (
 , state_(State::Idle)
 , contentionWindow_(CONTENTION_WINDOW_DEFAULT)
 , virtualCarrierSensingEnabled_(false)
+, ticks_(0)
 {
 }
 
 /// A packet arrives for transmission
 void SenderStation::arrive (const Packet& packet)
 {
-    std::cout << "packet arrived at " << name_ << std::endl;
+    std::cout << "packet arrived at " << name_
+            << " (tick " << ticks_ << ")" << std::endl;
     arrivedPackets_.push_back(packet);
 }
 
@@ -34,6 +36,9 @@ void SenderStation::receive (const Packet& packet)
             && packet.type == PacketType::Ack
             && rxPacketBelongsToUs(packet))
     {
+        std::cout << name_ << " received ACK"
+                << " (tick " << ticks_ << ")" << std::endl;
+
         // SUCCESS! we sent a packet, and it was acked.
         // remove it from the send list
         arrivedPackets_.pop_front();
@@ -50,8 +55,7 @@ void SenderStation::receive (const Packet& packet)
 
 void SenderStation::tick ()
 {
-    // this only tracks arrived packets per slot
-    arrivedPackets_.clear();
+    ticks_++;
 
     switch (state_) {
     case State::Idle:
@@ -62,9 +66,9 @@ void SenderStation::tick ()
         // where do we set this back to default?
         backoff_ = random() % contentionWindow_;
         remainingSenseTicks_ = DIFS_TICKS;
-        busyDuringSense_ = false;
     
-        std::cout << "packet ready at " << name_ << std::endl;
+        std::cout << "packet ready at " << name_
+                << ", selected random backoff of " << backoff_ << std::endl;
 
         // When this slot ticks, we are Ready, but by tock we need to Sense
         state_ = State::Sense;
@@ -76,18 +80,18 @@ void SenderStation::tick ()
         break;
 
     case State::Transmit:
-
         transmitFragment(arrivedPackets_.front());
         transmittedBytes_ += BYTES_PER_TICK;
 
         if (transmittedBytes_ == Packet::PACKET_SIZE.at(PacketType::Data)) {
-            std::cout << "transmission of " << transmittedBytes_ << " from "
-                    << name_ << "complete" << std::endl;
+            std::cout << name_ << " finished sending to "
+                    << arrivedPackets_.front().dst
+                    << " (tick " << ticks_ << ")" << std::endl;
 
             state_ = State::WaitForAck;
             waitForAckTicks_ = -1;
+            transmittedBytes_ = 0;
         }
-        std::cout << "transmitted " << transmittedBytes_ << " from " << name_ << std::endl;
         break;
 
     case State::WaitForAck:
@@ -112,12 +116,14 @@ void SenderStation::tock ()
         break;
 
     case State::Sense:
-        if (!busyDuringSense_ && mediaBusy()){
-            busyDuringSense_ = true;
+        if (mediaBusy()){
+            remainingSenseTicks_ = DIFS_TICKS;
+            break;
         }
 
         if (--remainingSenseTicks_ == 0) {
-            state_ = busyDuringSense_ ? State::Backoff : State::Transmit;
+            // if backoff is zero, skip directly to transmit
+            state_ = backoff_ ? State::Backoff : State::Transmit;
         }
 
         break;
@@ -125,15 +131,17 @@ void SenderStation::tock ()
     case State::Backoff:
         // Any busy channel means we don't get to decrement our backoff counter
         if (mediaBusy()) {
-            busy = true;
-        }
-
-        if (!busy) {
+            remainingSenseTicks_ = DIFS_TICKS;
+            state_ = State::Sense;
+            break;
+        } else {
             backoff_--;
         }
 
         if (backoff_ == 0) {
             state_ = State::Transmit;
+            std::cout << name_ << " starting transmit"
+                << " (tick " << ticks_ << ")" << std::endl;
         }
 
         break;
@@ -143,13 +151,12 @@ void SenderStation::tock ()
         break;
 
     case State::WaitForAck:
-        std::cout << name_ << " waiting for ack " << name_ << std::endl;
-
         if (waitForAckTicks_++ > MAX_ACK_TICKS) {
             std::cout << name_ << " received no ack, retrying" << std::endl; 
             // Collision has occurred. Adjust contention window and try again.
             expandContentionWindow();
             backoff_ = random() % contentionWindow_;
+            remainingSenseTicks_ = DIFS_TICKS;
             state_ = State::Sense;
         }
         break;

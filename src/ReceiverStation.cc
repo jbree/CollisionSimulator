@@ -46,7 +46,6 @@ void ReceiverStation::tick ()
         break;
 
     case State::Acking:
-        std::cout << "ackTick " << ackTick_ << std::endl;
         if (ackTick_++) {
             Packet ack;
             ack.src = name_;
@@ -98,7 +97,7 @@ void ReceiverStation::tock ()
         if (!receivingPacket_) {
             receivingPacket_ = std::unique_ptr<Packet>(
                     new Packet(receivingPackets_.front()));
-            std::cout << "Station " << name_ << " receiving packet: \n    "
+            std::cout << name_ << " receiving packet: \n    "
                     << *receivingPacket_ << std::endl;
 
             receivedBytes_ = 0;
@@ -107,7 +106,7 @@ void ReceiverStation::tock ()
         receivedBytes_ += BYTES_PER_TICK;
         
         if (receivedBytes_ == Packet::PACKET_SIZE.at(PacketType::Data)) {
-            std::cout << "Station " << name_ << " finished receiving packet:\n    "
+            std::cout << name_ << " finished receiving packet:\n    "
                     << *receivingPacket_ << std::endl;
             ackTick_ = 0;
             receivedPacketCount_++;

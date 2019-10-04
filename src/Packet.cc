@@ -23,7 +23,7 @@ bool Packet::operator== (const Packet& rhs) const
 
 std::ostream& operator<< (std::ostream& out, const Packet& rhs)
 {
-    out << "  packet src: " << rhs.src << ", dst: " << rhs.dst << ", size: "
+    out << "packet src: " << rhs.src << ", dst: " << rhs.dst << ", size: "
         << rhs.size;
 
     return out;
