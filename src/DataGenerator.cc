@@ -1,5 +1,6 @@
 #include "DataGenerator.hh"
 
+#include <cmath>
 #include <ctime>
 
 std::list<int> DataGenerator::createArrivalTimes(int lambda)
