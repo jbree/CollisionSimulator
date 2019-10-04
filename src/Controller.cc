@@ -164,7 +164,7 @@ void Controller::RunSimulation()
 
 		while (itPacketArrivals != packetArrivalMap.end())
 		{
-			while (itPacketArrivals->second.first.front() == tickCounter)
+			while (!itPacketArrivals->second.first.empty() && (itPacketArrivals->second.first.front() == tickCounter))
 			{
 				//packet arrives at station
 
@@ -345,28 +345,17 @@ void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
 
 void Controller::RetrieveResults()
 {
-	std::list<SenderStation>::iterator itSenderList;
-	std::list<ReceiverStation>::iterator itReceiverList;
+	std::list<std::shared_ptr<SenderStation>>::iterator itSenderList;
+	std::list<std::shared_ptr<ReceiverStation>>::iterator itReceiverList;
 
 	for (auto receiver: receiverList) {
 		std::cout << receiver->name() <<" saw "
 				<< receiver->collisions() << " collisions and "
 				<< receiver->receivedPackets() << " successes" << std::endl; 
+
+		double receivedKb = receiver->receivedPackets() * 1.5;
+		double throughput = receivedKb / 10;
+
+		std::cout << "The throughput for receiver " << receiver->name() << " is " << throughput << std::endl;
 	}
-
-	/*while (itSenderList != senderList.end())
-	{
-		//record byte arrival data (for throughput) and collision data
-		//itSenderList->arrivedPackets (iterate through to count bytes) or itSenderList->receivedBytes, then count for Kb for throughput unit Kbps
-
-		itSenderList++;
-	}
-
-	itReceiverList = receiverList.begin();
-	while (itReceiverList != receiverList.end())
-	{
-		//record byte arrival data (for throughput) and collision data
-
-		itReceiverList++;
-	}*/
 }
