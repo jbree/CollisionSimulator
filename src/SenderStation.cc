@@ -152,10 +152,11 @@ void SenderStation::tock ()
 
     case State::WaitForAck:
         if (waitForAckTicks_++ > MAX_ACK_TICKS) {
-            std::cout << name_ << " received no ack, retrying" << std::endl; 
             // Collision has occurred. Adjust contention window and try again.
             expandContentionWindow();
             backoff_ = random() % contentionWindow_;
+            std::cout << name_ << " received no ack, retrying (backoff "
+                    << backoff_ << ", cw: " << contentionWindow_ << ")" << std::endl; 
             remainingSenseTicks_ = DIFS_TICKS;
             state_ = State::Sense;
         }

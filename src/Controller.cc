@@ -164,7 +164,7 @@ void Controller::RunSimulation()
 
 		while (itPacketArrivals != packetArrivalMap.end())
 		{
-			if (itPacketArrivals->second.first.front() == tickCounter)
+			while (itPacketArrivals->second.first.front() == tickCounter)
 			{
 				//packet arrives at station
 

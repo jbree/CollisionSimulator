@@ -1,7 +1,6 @@
 #pragma once
 
 #include <list>
-#include <cstdlib>
 
 static const int MAX_SIMULATION_TICKS{ 1000000 };
 
