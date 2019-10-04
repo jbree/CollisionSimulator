@@ -13,16 +13,9 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 	//import set of mediums into station contructor
 	std::ifstream inFile("setup.txt");
 
-	std::string stationName;
-	std::string mediumName;
-	std::string transmitMarker;
-	std::string targetStation;
-	std::string lambdaValue;
-
 	std::pair<std::list<int>, std::string> packetTargetStationPair;
 
 	std::map<std::string, std::list<std::string>> stationMap;
-	std::map<std::string, std::list<std::string>>::iterator itStation = stationMap.begin();
 
 	std::list<std::string>::iterator itMediums;
 	std::set<std::shared_ptr<Medium>>::iterator itMediumPtrs;
@@ -40,7 +33,13 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 		std::string line;
 		while (std::getline(inFile, line))
 		{
+			std::string stationName;
+			std::string mediumName;
+			std::string transmitMarker;
+			std::string targetStation;
+			std::string lambdaValue;
 			std::istringstream stream(line);
+
 			stream >> stationName >> mediumName >> transmitMarker >> targetStation >> lambdaValue;
 
 			if (stationMap.count(stationName) == 0)
@@ -69,6 +68,7 @@ Controller::Controller(bool virtualCarrierSensingEnabled)
 		}
 	}
 
+	std::map<std::string, std::list<std::string>>::iterator itStation = stationMap.begin();
 	while (itStation != stationMap.end())
 	{
 		itMediums = itStation->second.begin();
@@ -127,7 +127,7 @@ void Controller::RunSimulation()
 	std::map<std::string, std::shared_ptr<Medium>>::iterator itMediums;
 
 	//should do for each lambda combination
-
+	const uint32_t MAX_SIMULATION_TICKS(120);
 	while (tickCounter < MAX_SIMULATION_TICKS)
 	{
 		//ticks, mediums first, then stations

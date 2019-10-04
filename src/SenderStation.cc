@@ -19,7 +19,6 @@ SenderStation::SenderStation (
 , contentionWindow_(CONTENTION_WINDOW_DEFAULT)
 , virtualCarrierSensingEnabled_(false)
 {
-    srandom(time(nullptr));
 }
 
 /// A packet arrives for transmission

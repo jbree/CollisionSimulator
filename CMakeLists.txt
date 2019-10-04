@@ -21,4 +21,8 @@ target_include_directories(${PROJECT_NAME}
         include
 )
 
+
+add_executable(sim src/main.cc)
+target_link_libraries(sim PUBLIC ${PROJECT_NAME})
+
 add_subdirectory(test)
