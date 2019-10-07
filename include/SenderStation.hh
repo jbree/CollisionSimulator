@@ -57,7 +57,9 @@ private:
         Sense,
         Backoff,
         Transmit,
-        WaitForAck
+        WaitForAck,
+        RequestingClearance,
+        WaitingForClearance,
     };
 
     State state_;
@@ -69,6 +71,7 @@ private:
 
     uint16_t backoff_;
     uint16_t contentionWindow_; /// Contention window slot count
+    uint16_t navBackoff_;
 
     uint32_t ticks_;
 

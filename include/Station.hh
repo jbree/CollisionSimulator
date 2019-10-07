@@ -12,6 +12,7 @@ class Medium;
 
 static const uint16_t SIFS_TICKS { 1 };
 static const uint16_t DIFS_TICKS { 4 };
+static const uint16_t ACK_TICKS { 2 };
 
 ///FIXME Find a more sensible way to implement this. Just looks wrong.
 static const int16_t MAX_ACK_TICKS { 1 };

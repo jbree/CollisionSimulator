@@ -14,7 +14,10 @@
 
 class Controller {
 public:
-	Controller(bool virtualCarrierSensingEnabled);
+	Controller(
+			bool virtualCarrierSensingEnabled,
+			const std::string& inputFilename = "setup.txt"
+			);
 
 	void RunSimulation();
 

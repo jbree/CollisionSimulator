@@ -9,10 +9,13 @@
 #include <string>
 #include <map>
 
-Controller::Controller(bool virtualCarrierSensingEnabled)
+Controller::Controller(
+		bool virtualCarrierSensingEnabled,
+		const std::string& inputFilename
+		)
 {
 	//import set of mediums into station contructor
-	std::ifstream inFile("setup.txt");
+	std::ifstream inFile(inputFilename);
 
 	std::pair<std::list<int>, std::string> packetTargetStationPair;
 
@@ -263,6 +266,7 @@ void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
 		outFile << "Station C lambda = " << itLambdas->second << std::endl;
 
 		tickCounter = 0;
+
 		while (tickCounter < MAX_SIMULATION_TICKS)
 		{
 			// std::cout << "tick " << tickCounter << std::endl;

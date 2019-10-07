@@ -40,7 +40,7 @@ void ReceiverStation::receive (const Packet& packet)
 void ReceiverStation::tick ()
 {
     receivingPackets_.clear();
-    
+
     switch (state_) {
     case State::Receiving:
         break;
@@ -50,9 +50,13 @@ void ReceiverStation::tick ()
             Packet ack;
             ack.src = name_;
             ack.dst = receivingPacket_->src;
-            ack.type = PacketType::Ack;
-            ack.size = Packet::PACKET_SIZE.at(PacketType::Ack);
-
+            if (receivingPacket_->type == PacketType::RTS) {
+                ack.type = PacketType::CTS;
+            } else {
+                ack.type = PacketType::Ack;
+            }
+            ack.size = Packet::PACKET_SIZE.at(ack.type);
+            std::cout << name_ << " sending " << ack << std::endl;
             transmitFragment(ack);
         }
 
@@ -104,12 +108,16 @@ void ReceiverStation::tock ()
         }
 
         receivedBytes_ += BYTES_PER_TICK;
-        
-        if (receivedBytes_ == Packet::PACKET_SIZE.at(PacketType::Data)) {
+
+        if (receivedBytes_ == Packet::PACKET_SIZE.at(receivingPacket_->type)) {
             std::cout << name_ << " finished receiving packet:\n    "
                     << *receivingPacket_ << std::endl;
             ackTick_ = 0;
-            receivedPacketCount_++;
+
+            // only count data packets toward overall packet stats
+            if (receivingPacket_->type == PacketType::Data) {
+                receivedPacketCount_++;
+            }
             state_ = State::Acking;
         }
         break;

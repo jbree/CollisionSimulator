@@ -12,6 +12,15 @@ Then build using CMake
     cd build
     cmake path/to/project/source
 
+## Args
+
+Command line args:
+
+    --input                     (specify input file)
+    --seed RANDOM_SEED_UINT     (specify random seed value)
+    --vcs                       (enable virtual carrier sensing)
+
+
 ## Explanation
 
 The basic idea is to model each of the significant pieces of the network in an
