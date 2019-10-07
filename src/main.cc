@@ -28,10 +28,16 @@ int main (int argc, char* argv[])
     Controller c(vcs, inputFile);
 
     c.RunSimulation();
+
+    std::cout << "---" << std::endl
+            << "input file: " << inputFile << std::endl
+            << "random seed: " << seed << std::endl
+            << "virtual carrier sensing: " << (vcs ? "enabled" : "disabled")
+            << std::endl << "---" << std::endl;
+
     c.RetrieveResults();
 
-    std::cout << "random seed: " << seed << std::endl
-            << "input file: " << inputFile << std::endl;
+    std::cout << "---" << std::endl;
 
     return 0;
 }
