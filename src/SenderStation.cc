@@ -17,7 +17,8 @@ SenderStation::SenderStation (
 , media_(media)
 , state_(State::Idle)
 , contentionWindow_(CONTENTION_WINDOW_DEFAULT)
-, virtualCarrierSensingEnabled_(false)
+, navBackoff_(0)
+, virtualCarrierSensingEnabled_(virtualCarrierSensingEnabled)
 , ticks_(0)
 {
 }
@@ -50,6 +51,23 @@ void SenderStation::receive (const Packet& packet)
 
         return;
     }
+    else if (packet.dst != name_ && state_ != State::RequestingClearance && state_ != State::WaitingForClearance) {
+        if (packet.type == PacketType::RTS) {
+            // rts + sifs + cts + sifs + tx
+            navBackoff_ = ACK_TICKS + SIFS_TICKS + ACK_TICKS + SIFS_TICKS + 100 + 1;
+        }
+        else if (packet.type == PacketType::CTS) {
+            // cts + sifs + tx
+            navBackoff_ = ACK_TICKS + SIFS_TICKS + 100 + 1;
+        }
+    }
+    else if (packet.dst == name_ && packet.type == PacketType::CTS) {
+        std::cout << name_ << " rx CTS " << ackTick_ << std::endl;
+        if (ackTick_ == 3) {
+            std::cout << name_ << " received clearance" << std::endl;
+            state_ = State::Transmit;
+        }
+    }
 }
 
 
@@ -66,7 +84,7 @@ void SenderStation::tick ()
         // where do we set this back to default?
         backoff_ = random() % contentionWindow_;
         remainingSenseTicks_ = DIFS_TICKS;
-    
+
         std::cout << "packet ready at " << name_
                 << ", selected random backoff of " << backoff_ << std::endl;
 
@@ -77,6 +95,27 @@ void SenderStation::tick ()
     case State::Sense:
     case State::Backoff:
         // No-op
+        break;
+
+    case State::RequestingClearance: {
+        Packet rts;
+        rts.src = name_;
+        rts.dst = arrivedPackets_.front().dst;
+        rts.size = RTS_BYTES;
+        rts.type = PacketType::RTS;
+
+        transmitFragment(rts);
+        std::cout << name_ << " requesting clearance"
+                << " (tick " << ticks_ << ")" << std::endl;
+        std::cout << name_ << " sending RTS " << ackTick_ << std::endl;
+        if (++ackTick_ > 1) {
+            ackTick_ = 0;
+            state_ = State::WaitingForClearance;
+        }
+        break;
+    }
+
+    case State::WaitingForClearance:
         break;
 
     case State::Transmit:
@@ -123,12 +162,24 @@ void SenderStation::tock ()
 
         if (--remainingSenseTicks_ == 0) {
             // if backoff is zero, skip directly to transmit
-            state_ = backoff_ ? State::Backoff : State::Transmit;
+            ackTick_ = 0;
+            if (backoff_) {
+                state_ = State::Backoff;
+            } else {
+                state_ = virtualCarrierSensingEnabled_
+                        ? State::RequestingClearance
+                        : State::Transmit;
+            }
         }
 
         break;
 
     case State::Backoff:
+        if (navBackoff_) {
+            // std::cout << name_ << " navBackoff_: " << navBackoff_ << std::endl;
+            break;
+        }
+
         // Any busy channel means we don't get to decrement our backoff counter
         if (mediaBusy()) {
             remainingSenseTicks_ = DIFS_TICKS;
@@ -138,12 +189,31 @@ void SenderStation::tock ()
             backoff_--;
         }
 
+        std::cout << name_ << " backing off" << std::endl;
         if (backoff_ == 0) {
-            state_ = State::Transmit;
-            std::cout << name_ << " starting transmit"
-                << " (tick " << ticks_ << ")" << std::endl;
+            if (virtualCarrierSensingEnabled_) {
+                ackTick_ = 0;
+                state_ = State::RequestingClearance;
+            } else {
+                state_ = State::Transmit;
+                std::cout << name_ << " starting transmit"
+                        << " (tick " << ticks_ << ")" << std::endl;
+            }
         }
 
+        break;
+
+    case State::RequestingClearance:
+        break;
+
+    case State::WaitingForClearance:
+        std::cout << name_ << " waiting for clearance " << ackTick_ << std::endl;
+        if (ackTick_++ > 4) {
+            expandContentionWindow();
+            backoff_ = random() % contentionWindow_;
+            remainingSenseTicks_ = DIFS_TICKS;
+            state_ = State::Sense;
+        }
         break;
 
     case State::Transmit:
@@ -156,7 +226,7 @@ void SenderStation::tock ()
             expandContentionWindow();
             backoff_ = random() % contentionWindow_;
             std::cout << name_ << " received no ack, retrying (backoff "
-                    << backoff_ << ", cw: " << contentionWindow_ << ")" << std::endl; 
+                    << backoff_ << ", cw: " << contentionWindow_ << ")" << std::endl;
             remainingSenseTicks_ = DIFS_TICKS;
             state_ = State::Sense;
         }
@@ -164,6 +234,10 @@ void SenderStation::tock ()
 
     default:
         break;
+    }
+
+    if (navBackoff_) {
+        navBackoff_--;
     }
 }
 

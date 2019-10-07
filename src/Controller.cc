@@ -9,10 +9,13 @@
 #include <string>
 #include <map>
 
-Controller::Controller(bool virtualCarrierSensingEnabled)
+Controller::Controller(
+		bool virtualCarrierSensingEnabled,
+		const std::string& inputFilename
+		)
 {
 	//import set of mediums into station contructor
-	std::ifstream inFile("setup.txt");
+	std::ifstream inFile(inputFilename);
 
 	std::pair<std::list<int>, std::string> packetTargetStationPair;
 
@@ -170,7 +173,7 @@ void Controller::RunSimulation()
 
 				//do algorithm, if free, send to corresponding medium
 				//use packetArrivalMap[itPacketArrivals->first].second to get destination for the packet
-				
+
 				packetToSend.src = itPacketArrivals->first;
 				packetToSend.dst = itPacketArrivals->second.second;
 				packetToSend.type = PacketType::Data;
@@ -251,7 +254,7 @@ void Controller::RunSimulationAllLambdas(bool virtualCarrierSensingEnabled)
 		//change up stations A, C's packetArrivalMap with lambdaPairList
 		packetArrivalMap["A"] = std::make_pair(generator.createArrivalTimes(itLambdas->first), packetArrivalMap["A"].second);
 		packetArrivalMap["C"] = std::make_pair(generator.createArrivalTimes(itLambdas->first), packetArrivalMap["C"].second);
-		
+
 		while (tickCounter < MAX_SIMULATION_TICKS)
 		{
 			//ticks, mediums first, then stations
@@ -351,7 +354,7 @@ void Controller::RetrieveResults()
 	for (auto receiver: receiverList) {
 		std::cout << receiver->name() <<" saw "
 				<< receiver->collisions() << " collisions and "
-				<< receiver->receivedPackets() << " successes" << std::endl; 
+				<< receiver->receivedPackets() << " successes" << std::endl;
 
 		double receivedKb = receiver->receivedPackets() * 1.5;
 		double throughput = receivedKb / 10;
