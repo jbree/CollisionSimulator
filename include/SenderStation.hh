@@ -34,13 +34,15 @@ public:
     /// general direction
     virtual void receive (const Packet& packet) override;
 
+    uint64_t transmittedPackets () const;
+
 protected:
 
     void expandContentionWindow ();
 
     std::set<std::shared_ptr<Medium>> media_;
 
-    
+
 private:
 
     std::list<Packet> arrivedPackets_;
@@ -50,6 +52,8 @@ private:
     std::list<Packet> receivedPacket_;
     std::unique_ptr<Packet> receivingPacket_;
     size_t receivedBytes_;
+    uint64_t transmittedPackets_;
+
 
     enum class State {
         Idle,

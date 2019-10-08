@@ -382,7 +382,13 @@ void Controller::RetrieveResults()
 		double receivedKb = receiver->receivedPackets() * 1.5;
 		double throughput = receivedKb / 10;
 
-		std::cout << "The throughput to receiver " << receiver->name() << " is " << throughput << std::endl;
+		std::cout << "The throughput to receiver " << receiver->name() << " is " << throughput << "Kbps" << std::endl;
+	}
+
+	for (auto sender: senderList) {
+		std::cout << sender->name() << " sent "
+				<< sender->transmittedPackets() << " packets successfully"
+				<< std::endl;
 	}
 }
 

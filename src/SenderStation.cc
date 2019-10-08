@@ -20,6 +20,7 @@ SenderStation::SenderStation (
 , navBackoff_(0)
 , virtualCarrierSensingEnabled_(virtualCarrierSensingEnabled)
 , ticks_(0)
+, transmittedPackets_(0)
 {
 }
 
@@ -48,7 +49,7 @@ void SenderStation::receive (const Packet& packet)
         state_ = arrivedPackets_.empty() ? State::Idle : State::Ready;
 
         contentionWindow_ = CONTENTION_WINDOW_DEFAULT;
-
+        transmittedPackets_++;
         return;
     }
     else if (packet.dst != name_ && state_ != State::RequestingClearance && state_ != State::WaitingForClearance) {
@@ -250,3 +251,10 @@ void SenderStation::expandContentionWindow ()
             ? CONTENTION_WINDOW_MAX
             : cw);
 }
+
+
+uint64_t SenderStation::transmittedPackets () const
+{
+    return transmittedPackets_;
+}
+
