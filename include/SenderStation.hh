@@ -81,4 +81,6 @@ private:
 
     bool virtualCarrierSensingEnabled_; /// Virtual carrier sensing
 
+    uint32_t acksRx_;
+
 };

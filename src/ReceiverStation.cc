@@ -13,6 +13,7 @@ ReceiverStation::ReceiverStation (
 , colliding_(false)
 , collisions_(0)
 , receivedPacketCount_(0)
+, ticks_(0)
 {
 }
 
@@ -25,6 +26,10 @@ uint64_t ReceiverStation::collisions () const
 
 uint64_t ReceiverStation::receivedPackets () const
 {
+    for (auto sender: rxBySender_) {
+        std::cout << sender.first << " acked " << sender.second << " times" << std::endl; 
+    }
+
     return receivedPacketCount_;
 }
 
@@ -39,6 +44,7 @@ void ReceiverStation::receive (const Packet& packet)
 
 void ReceiverStation::tick ()
 {
+    ticks_++;
     receivingPackets_.clear();
 
     switch (state_) {
@@ -54,7 +60,18 @@ void ReceiverStation::tick ()
                 ack.type = PacketType::CTS;
             } else {
                 ack.type = PacketType::Ack;
+                if (ackTick_ > 2) {
+                    std::cout << name_ << " finished receiving packet:\n    "
+                            << *receivingPacket_ << " (tock " << ticks_ << ")" << std::endl;
+                    receivedPacketCount_++;
+
+                    if (rxBySender_.count(ack.dst) == 0) {
+                        rxBySender_[ack.dst] = 0;
+                    }
+                    rxBySender_[ack.dst]++;
+                }
             }
+
             ack.size = Packet::PACKET_SIZE.at(ack.type);
             std::cout << name_ << " sending " << ack << std::endl;
             transmitFragment(ack);
@@ -79,6 +96,8 @@ void ReceiverStation::tock ()
         // multiple or zero packets, reset and keep waiting
         if (receivingPackets_.empty()) {
             colliding_ = false;
+            receivingPacket_.reset();
+            receivedBytes_ = 0;
             break;
         }
         if (receivingPackets_.size() > 1) {
@@ -110,13 +129,12 @@ void ReceiverStation::tock ()
         receivedBytes_ += BYTES_PER_TICK;
 
         if (receivedBytes_ == Packet::PACKET_SIZE.at(receivingPacket_->type)) {
-            std::cout << name_ << " finished receiving packet:\n    "
-                    << *receivingPacket_ << std::endl;
+
             ackTick_ = 0;
 
             // only count data packets toward overall packet stats
             if (receivingPacket_->type == PacketType::Data) {
-                receivedPacketCount_++;
+
             }
             state_ = State::Acking;
         }

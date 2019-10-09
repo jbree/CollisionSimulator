@@ -51,6 +51,9 @@ protected:
     bool colliding_;
     uint64_t collisions_;
     uint64_t receivedPacketCount_;
+    uint64_t ticks_;
+
+    std::map <std::string, uint32_t> rxBySender_;
 
 private:
 

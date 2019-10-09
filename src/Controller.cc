@@ -23,7 +23,6 @@ Controller::Controller(
 
 	std::list<std::string>::iterator itMediums;
 	std::set<std::shared_ptr<Medium>>::iterator itMediumPtrs;
-	std::set<std::shared_ptr<Medium>> mediumSet;
 
 	/*
 	File format is expected to be something like:
@@ -75,6 +74,7 @@ Controller::Controller(
 	std::map<std::string, std::list<std::string>>::iterator itStation = stationMap.begin();
 	while (itStation != stationMap.end())
 	{
+		std::set<std::shared_ptr<Medium>> mediumSet;
 		itMediums = itStation->second.begin();
 		while (itMediums != itStation->second.end())
 		{
@@ -379,7 +379,7 @@ void Controller::RetrieveResults()
 			<< receiver->collisions() << " collisions and "
 			<< receiver->receivedPackets() << " successes" << std::endl;
 
-		double receivedKb = receiver->receivedPackets() * 1.5;
+		double receivedKb = receiver->receivedPackets() * 1.5 * 8;
 		double throughput = receivedKb / 10;
 
 		std::cout << "The throughput to receiver " << receiver->name() << " is " << throughput << "Kbps" << std::endl;

@@ -21,6 +21,7 @@ SenderStation::SenderStation (
 , virtualCarrierSensingEnabled_(virtualCarrierSensingEnabled)
 , ticks_(0)
 , transmittedPackets_(0)
+, acksRx_(0)
 {
 }
 
@@ -41,15 +42,10 @@ void SenderStation::receive (const Packet& packet)
         std::cout << name_ << " received ACK"
                 << " (tick " << ticks_ << ")" << std::endl;
 
+        acksRx_++;
         // SUCCESS! we sent a packet, and it was acked.
         // remove it from the send list
-        arrivedPackets_.pop_front();
 
-        // either go to idle, or prepare to send another packet
-        state_ = arrivedPackets_.empty() ? State::Idle : State::Ready;
-
-        contentionWindow_ = CONTENTION_WINDOW_DEFAULT;
-        transmittedPackets_++;
         return;
     }
     else if (packet.dst != name_ && state_ != State::RequestingClearance && state_ != State::WaitingForClearance) {
@@ -190,7 +186,7 @@ void SenderStation::tock ()
             backoff_--;
         }
 
-        std::cout << name_ << " backing off" << std::endl;
+        // std::cout << name_ << " backing off" << std::endl;
         if (backoff_ == 0) {
             if (virtualCarrierSensingEnabled_) {
                 ackTick_ = 0;
@@ -222,6 +218,20 @@ void SenderStation::tock ()
         break;
 
     case State::WaitForAck:
+        if (acksRx_ == 2) {
+            // either go to idle, or prepare to send another packet
+            state_ = arrivedPackets_.empty() ? State::Idle : State::Ready;
+            transmittedPackets_++;
+
+            contentionWindow_ = CONTENTION_WINDOW_DEFAULT;
+            backoff_ = random() % contentionWindow_;
+            remainingSenseTicks_ = DIFS_TICKS;
+            
+            arrivedPackets_.pop_front();
+            acksRx_ = 0;
+            break;
+        }
+        
         if (waitForAckTicks_++ > MAX_ACK_TICKS) {
             // Collision has occurred. Adjust contention window and try again.
             expandContentionWindow();
@@ -230,6 +240,7 @@ void SenderStation::tock ()
                     << backoff_ << ", cw: " << contentionWindow_ << ")" << std::endl;
             remainingSenseTicks_ = DIFS_TICKS;
             state_ = State::Sense;
+            acksRx_ = 0;
         }
         break;
 
