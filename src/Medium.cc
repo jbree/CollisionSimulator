@@ -44,7 +44,7 @@ bool Medium::isBusy () const
 /// dependency.
 void Medium::addStation (std::weak_ptr<Station> receiver)
 {
-    std::cout << "Added " << receiver.lock()->name() << " to medium " << name_ << std::endl;
+    // std::cout << "Added " << receiver.lock()->name() << " to medium " << name_ << std::endl;
     receivers_.emplace_back(std::move(receiver));
 }
 

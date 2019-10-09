@@ -57,8 +57,8 @@ void ReceiverStation::tick ()
             } else {
                 ack.type = PacketType::Ack;
                 if (ackTick_ > 2) {
-                    std::cout << name_ << " finished receiving packet:\n    "
-                            << *receivingPacket_ << " (tock " << ticks_ << ")" << std::endl;
+                    // std::cout << name_ << " finished receiving packet:\n    "
+                    //         << *receivingPacket_ << " (tock " << ticks_ << ")" << std::endl;
                     receivedPacketCount_++;
 
                     if (rxBySender_.count(ack.dst) == 0) {
@@ -69,7 +69,7 @@ void ReceiverStation::tick ()
             }
 
             ack.size = Packet::PACKET_SIZE.at(ack.type);
-            std::cout << name_ << " sending " << ack << std::endl;
+            // std::cout << name_ << " sending " << ack << std::endl;
             transmitFragment(ack);
         }
 
@@ -102,7 +102,7 @@ void ReceiverStation::tock ()
             if (!colliding_) {
                 colliding_ = true;
                 collisions_++;
-                std::cout << "collision!" << std::endl;
+                // std::cout << "collision!" << std::endl;
             }
             break;
         }
@@ -116,8 +116,8 @@ void ReceiverStation::tock ()
         if (!receivingPacket_) {
             receivingPacket_ = std::unique_ptr<Packet>(
                     new Packet(receivingPackets_.front()));
-            std::cout << name_ << " receiving packet: \n    "
-                    << *receivingPacket_ << std::endl;
+            // std::cout << name_ << " receiving packet: \n    "
+            //         << *receivingPacket_ << std::endl;
 
             receivedBytes_ = 0;
         }

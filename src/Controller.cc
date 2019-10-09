@@ -124,13 +124,13 @@ void Controller::RunSimulation()
 	unsigned int tickCounter = 0; //counter for number of 10 micro-s ticks
 	Packet packetToSend;
 
-	for (auto station : senderList) {
-		std::cout << "sender: " << station->name() << std::endl;
-	}
+	// for (auto station : senderList) {
+	// 	std::cout << "sender: " << station->name() << std::endl;
+	// }
 
-	for (auto station : receiverList) {
-		std::cout << "receiver: " << station->name() << std::endl;
-	}
+	// for (auto station : receiverList) {
+	// 	std::cout << "receiver: " << station->name() << std::endl;
+	// }
 
 	std::map<std::string, std::pair<std::list<int>, std::string>>::iterator itPacketArrivals = packetArrivalMap.begin();
 	std::list<std::shared_ptr<SenderStation>>::iterator itSenderList;
@@ -228,11 +228,11 @@ void Controller::RunSimulation()
 		tickCounter++;
 	}
 
-	for (auto packetList : packetArrivalMap) {
-		std::cout << packetList.first << " has "
-			<< packetList.second.first.size() << " remaining "
-			<< std::endl;
-	}
+	// for (auto packetList : packetArrivalMap) {
+	// 	std::cout << packetList.first << " has "
+	// 		<< packetList.second.first.size() << " remaining "
+	// 		<< std::endl;
+	// }
 
 	//call retrieve results to report findings, list lambda, throughput, collisions for all nodes
 }
