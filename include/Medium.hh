@@ -2,6 +2,7 @@
 
 #include "Simulatable.hh"
 #include <list>
+#include <string>
 #include <vector>
 
 class Packet;
@@ -39,10 +40,14 @@ public:
     /// Invoke at the end of a simulation frame
     void tock () override;
 
+    const std::string& name () const;
+
 private:
     bool isTicking_;
     bool isTransmitting_;
     std::vector<std::weak_ptr<Station>> receivers_;
     std::list<Packet> packets_;
+
+    std::string name_;
 
 };

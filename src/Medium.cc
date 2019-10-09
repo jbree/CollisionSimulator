@@ -1,6 +1,7 @@
 #include "Medium.hh"
 #include "Packet.hh"
 #include "Station.hh"
+#include <iostream>
 #include <stdexcept>
 
 
@@ -9,6 +10,7 @@ Medium::Medium (
         )
 : isTicking_(false)
 , isTransmitting_(false)
+, name_(name)
 {
 }
 
@@ -42,6 +44,7 @@ bool Medium::isBusy () const
 /// dependency.
 void Medium::addStation (std::weak_ptr<Station> receiver)
 {
+    std::cout << "Added " << receiver.lock()->name() << " to medium " << name_ << std::endl;
     receivers_.emplace_back(std::move(receiver));
 }
 
@@ -71,4 +74,10 @@ void Medium::tock ()
             }
         }
     }
+}
+
+
+const std::string& Medium::name () const
+{
+    return name_;
 }
