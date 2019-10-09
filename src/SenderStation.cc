@@ -219,6 +219,8 @@ void SenderStation::tock ()
 
     case State::WaitForAck:
         if (acksRx_ == 2) {
+            arrivedPackets_.pop_front();
+            
             // either go to idle, or prepare to send another packet
             state_ = arrivedPackets_.empty() ? State::Idle : State::Ready;
             transmittedPackets_++;
@@ -227,7 +229,6 @@ void SenderStation::tock ()
             backoff_ = random() % contentionWindow_;
             remainingSenseTicks_ = DIFS_TICKS;
             
-            arrivedPackets_.pop_front();
             acksRx_ = 0;
             break;
         }

@@ -26,10 +26,6 @@ uint64_t ReceiverStation::collisions () const
 
 uint64_t ReceiverStation::receivedPackets () const
 {
-    for (auto sender: rxBySender_) {
-        std::cout << sender.first << " acked " << sender.second << " times" << std::endl; 
-    }
-
     return receivedPacketCount_;
 }
 
