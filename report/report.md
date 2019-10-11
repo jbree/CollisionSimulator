@@ -22,7 +22,27 @@ numbersections: true
 
 ## Description
 
+The goal of this project was to create a simulation of the Distributed
+Coordination Function (DCF) of 802.11 for the purpose of analyzing performance
+characteristics. Specifically, we were looking for data explaining the
+throughput, fairness, and collision-propensity of different network topologies
+both with and without virtual carrier sensing.
+
+
+
 ## Responsibilities
+
+For this project, we shared responsibility for coding and documentation. We met
+once to kick-off the project and discussed our approach to solving the problem.
+After that, we used git to collaborate on code and kept in contact via text
+message.
+
+Timothy took responsibility for Poisson traffic generation, instantiating the
+simulation controller and sending arriving packets to the model. He also used
+Matlab to generate graphs of our simulated data.
+
+Joshua took responsibility for coding the models of the simulation by
+implementing state machines to follow the specified protocols.
 
 # Simulation Methodology
 
