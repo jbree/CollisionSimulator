@@ -143,7 +143,12 @@ graphs of the combined throughput from both nodes.
 
 ## Fairness
 
+For clarity, we have included graph 3b both with and without scaling applied to
+more clearly show the fairness index at lower arrival rates.
+
 ![](img/3a.png){width=50%}\ ![](img/3b.png){width=50%}
+
+![](img/3b-scale.png){width=50%}
 
 # Justification
 
@@ -193,15 +198,15 @@ is very far from ideal, as we will discuss next.
 ## Hidden Terminals and Fairness
 
 It appears that when virtual carrier sensing is not enabled, channel usage is
-very unfair. When stations $A$ and $C$ first try to transmit, they both
-experience collisions until their $CW_0$ becomes large. Eventually, one of the
-stations is successful. When station $A$, is successful, its $CW_0$ is reset,
-and it is likely to have additional successes while $C$ continues to wait with
-its large backoff time. Even when additional collisions occur between the two,
-$A$ is more likely to find eventual success, since its lower $CW_0$ value will
-give it a better chance of transmitting sooner. So, we observe that in a
-topology with hidden terminals, networks without VCS enabled will be very
-unfair.
+very unfair under heavy load conditions. When stations $A$ and $C$ first try to
+transmit, they both experience collisions until their $CW_0$ becomes large.
+Eventually, one of the stations is successful. When station $A$, is successful,
+its $CW_0$ is reset, and it is likely to have additional successes while $C$
+continues to wait with its large backoff time. Even when additional collisions
+occur between the two, $A$ is more likely to find eventual success, since its
+lower $CW_0$ value will give it a better chance of transmitting sooner. So, we
+observe that in a topology with hidden terminals, networks without VCS enabled
+will be very unfair.
 
 Comparing graphs 1c and 1d, the green line representing throughput for the
 hidden terminal, sans-VCS case when $\lambda_A = 2\lambda_C$ shows that, once
@@ -236,7 +241,7 @@ indeed an improvement can be seen in graphs 2a-d for hidden terminals when VCS
 is enabled. Even in _Topology A_, it seems like VCS is not detrimental to
 performance.
 
-When VCS is disabled in _Topology B_, the collisions rate is very high. Even at
+When VCS is disabled in _Topology B_, the collision rate is very high. Even at
 lower arrival rates, the collision rate peaks by the name $\lambda = 200$. We
 think that it reaches the peak at this point because, at this arrival rate with
 this topology, the stations are already being backlogged due to collisions, so
@@ -266,4 +271,5 @@ In summary, CSMA/CA with VCS enabled seems to provide the best all-around
 performance in the various simulations we tried. It gives a lower number of
 collisions, higher throughput, and more fairness in every scenario with a hidden
 terminal, while providing performance similar to the non-VCS mode in _Topology
-A_.
+A_. CSMA/CA with VCS disabled was not well suited to handle the more complicated
+hidden terminal scenario.
